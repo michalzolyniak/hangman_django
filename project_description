@@ -1,0 +1,51 @@
+hangman django
+
+uzytkwnik wybiera ile prób ma losuje słowo wciskajac przycisk
+po każdej próbie dostaje informacje
+-ile prób zostało
+-wykorzystane litery
+-Słowo zaszyforwane z literami które istnieja
+
+
+<<<strony>>>
+Strony
+Tworzenie uzytkownika
+logowanie
+
+Strona gry	
+-ile do tej pory razy wygral
+-ile wygrał
+-ile przgerał
+-ile nie skonczył
+
+
+<<<tabele>>>
+-uzytkwnik 
+id user
+jego słowa
+per słowo
+uzyte litery
+odgadniete
+proba
+sesja aktywna
+
+
+tab: game
+-id_user
+-slowo do ogdadniecia
+-uzyte litery
+-próba
+-ilosx prob maksymalna
+
+tab: guessed_words
+id_user
+słowa
+
+tab: words
+id
+word
+language
+
+
+
+
