@@ -1,0 +1,13 @@
+{% extends 'hangman_django/base.html' %}
+
+{% block content %}
+    <form action="" method="post">
+        {% csrf_token %}
+        {{ form }}
+        <input type="submit" value="Submit">
+    </form>
+    <br>
+    <!--<form action="/add_user/">
+        <p>If you do not have account please <input type="submit" value="register"/></p>
+    </form>-->
+{% endblock %}

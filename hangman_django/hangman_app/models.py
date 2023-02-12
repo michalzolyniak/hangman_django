@@ -1,5 +1,6 @@
 from django.db import models
 from django.conf import settings
+import pandas as pd
 
 COUNTRY = (
     (1, "PL"),
@@ -10,15 +11,35 @@ COUNTRY = (
 
 class WordsToGuess(models.Model):
     """
-        words to guesess database
+        words to guess database
     """
     word = models.CharField(unique=True, max_length=64)
     country = models.IntegerField(choices=COUNTRY, null=True)
 
 
+def test_word():
+    data = WordsToGuess.objects.get(id=1)
+    return data
+
+
+def import_polish_words():
+    print('start')
+    df_words = pd.read_fwf('/home/michalzolyniak/Desktop/coders_lab/hangman_django/polish_words.txt')
+    df_words.columns = ['word']
+    df_words['country'] = '1'
+    df_words = df_words.head(1000)
+    data = df_words.to_dict('records')
+    model_instances = [WordsToGuess(**row) for row in data]
+    # bulk create the model instances
+    WordsToGuess.objects.bulk_create(model_instances)
+    print('finish')
+    # return None
+    #from hangman_app.models import import_polish_words
+
+
 class Game(models.Model):
     """
-        Hangman game per user
+        Hangman game per ser
     """
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     word_to_guess = models.ForeignKey(WordsToGuess, on_delete=models.CASCADE)
@@ -38,4 +59,3 @@ class GuessedWords(models.Model):
     guessed_attempt = models.IntegerField()
     allowed_attempts = models.IntegerField()
     game_date = models.DateTimeField()
-

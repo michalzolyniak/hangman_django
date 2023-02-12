@@ -1,0 +1,25 @@
+{% load static %}
+<!doctype html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <style>
+        table, th, td {
+            border: 1px solid black;
+        }
+    </style>
+</head>
+<body style='background-color:{{ color }}'>
+{% if user.username %}
+    <h3>username: {{ user.username }} </h3>
+    <form action="/logout/">
+        <input type="submit" value="logout"/>
+    </form>
+{% endif %}
+
+
+
+{% block content%}
+{% endblock %}
+</body>
+</html>
