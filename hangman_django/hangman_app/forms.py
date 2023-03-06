@@ -3,6 +3,7 @@ from django import forms
 from django.core.exceptions import ValidationError
 from django.contrib.auth import get_user_model
 from django.contrib.auth import authenticate
+
 # from .models import Category, Product
 
 User = get_user_model()
@@ -41,3 +42,8 @@ class LoginForm(forms.Form):
             raise ValidationError('Dane logowania nie są prawidłowe')
 
 
+class GameForm(forms.Form):
+    """
+        Game form
+    """
+    word = forms.CharField(max_length=150)

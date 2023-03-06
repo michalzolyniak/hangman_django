@@ -15,11 +15,14 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path
-from hangman_app.views import LoginView, UserCreateView
+from hangman_app.views import LoginView, UserCreateView, \
+    GameView, LogoutView
 
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('add_user/', UserCreateView.as_view(), name='add-user'),
     path('login/', LoginView.as_view(), name='login'),
+    path('logout/', LogoutView.as_view(), name='logout'),
+    path('game/', GameView.as_view(), name='game'),
 ]

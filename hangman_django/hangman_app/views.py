@@ -1,14 +1,13 @@
 from django.shortcuts import render
-from django.shortcuts import render, redirect
 from django.contrib.auth import get_user_model, login, \
     authenticate, logout
 from django.views.generic import RedirectView
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.views.generic import FormView
 from django.urls import reverse_lazy
 # Create your views here.
 from django.views.generic import FormView
-from .forms import UserCreateForm, LoginForm
+from .forms import UserCreateForm, LoginForm, GameForm
+from django.views import View
 
 User = get_user_model()
 
@@ -38,7 +37,7 @@ class LoginView(FormView):
     """
     template_name = 'hangman_django/login.html'
     form_class = LoginForm
-    success_url = reverse_lazy('main')
+    success_url = reverse_lazy('game')
 
     def form_valid(self, form):
         response = super().form_valid(form)
@@ -47,3 +46,46 @@ class LoginView(FormView):
         login(self.request, user)
         return response
 
+
+class LogoutView(RedirectView):
+    """
+        Logout view
+    """
+    url = reverse_lazy('login')
+
+    def get(self, request, *args, **kwargs):
+        logout(request)
+        return super().get(request, *args, **kwargs)
+
+
+class GameView(LoginRequiredMixin, View):
+    """
+        Product create view
+    """
+    form_class = GameForm
+
+    def get(self, request, *args, **kwargs):
+        form = self.form_class()
+        context = {'form': form}
+        return render(request, 'hangman_django/game.html', context)
+
+    # def post(self, request, *args, **kwargs):
+    #     form = self.form_class(request.POST)
+    #     context = {'form': form}
+    #     if form.is_valid():
+    #         cd = form.cleaned_data
+    #         name = cd['name']
+    #         consumption_hours = cd['consumption_hours']
+    #         default_price = 1
+    #         categories = cd['category']
+    #         product = Product.objects.create(
+    #             name=name,
+    #             consumption_hours=consumption_hours,
+    #             default_price=default_price
+    #         )
+    #
+    #         for category in categories:
+    #             product.category.add(category)
+    #
+    #         return redirect('fridge')
+    #     return render(request, 'fridge/add_category.html', context)
