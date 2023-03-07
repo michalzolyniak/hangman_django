@@ -22,6 +22,20 @@ def test_word():
     return data
 
 
+def get_random_word_for_country(country):
+    """
+    Returns a single random word from the WordsToGuess model for the given country.
+    """
+    words = WordsToGuess.objects.filter(country=country).order_by('?')
+    if words.exists():
+        return words.first().word
+    else:
+        return None
+
+
+
+
+
 def import_polish_words():
     print('start')
     df_words = pd.read_fwf('/home/michalzolyniak/Desktop/coders_lab/hangman_django/polish_words.txt')

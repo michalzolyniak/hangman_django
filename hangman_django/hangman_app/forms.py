@@ -8,6 +8,10 @@ from django.contrib.auth import authenticate
 
 User = get_user_model()
 
+LANGUAGE_T0_CHOSE = (
+    (1, "english"),
+    (2, "polish"),
+)
 
 class UserCreateForm(forms.Form):
     """
@@ -47,3 +51,10 @@ class GameForm(forms.Form):
         Game form
     """
     word = forms.CharField(max_length=150)
+
+
+class MainForm(forms.Form):
+    """
+        main form
+    """
+    language = forms.ChoiceField(choices=LANGUAGE_T0_CHOSE)

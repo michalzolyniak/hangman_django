@@ -2,12 +2,17 @@
 
 {% block content %}
     <form action="" method="post">
-        <br>
+        <h1>Hangman game</h1>
+        <h2>Let's play!! Select language</h2>
+
         {% csrf_token %}
+        <br>
         {{ form }}
+        <br><br>
         <input type="submit" value="Submit">
     </form>
-    <form action="/add_user/">
+    <br>
+    <!--<form action="/add_user/">
         <p>If you do not have account please <input type="submit" value="register"/></p>
-    </form>
+    </form>-->
 {% endblock %}

@@ -1,4 +1,4 @@
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from django.contrib.auth import get_user_model, login, \
     authenticate, logout
 from django.views.generic import RedirectView
@@ -6,8 +6,9 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.urls import reverse_lazy
 # Create your views here.
 from django.views.generic import FormView
-from .forms import UserCreateForm, LoginForm, GameForm
+from .forms import UserCreateForm, LoginForm, GameForm, MainForm
 from django.views import View
+from hangman_app.models import get_random_word_for_country
 
 User = get_user_model()
 
@@ -56,6 +57,32 @@ class LogoutView(RedirectView):
     def get(self, request, *args, **kwargs):
         logout(request)
         return super().get(request, *args, **kwargs)
+
+
+class MainView(LoginRequiredMixin, View):
+    """
+        Product create view
+    """
+    form_class = MainForm
+
+    def get(self, request, *args, **kwargs):
+        form = self.form_class()
+        context = {'form': form}
+        return render(request, 'hangman_django/main.html', context)
+
+    def post(self, request, *args, **kwargs):
+        form = self.form_class(request.POST)
+        # context = {'form': form}
+        if form.is_valid():
+            cd = form.cleaned_data
+            language = cd['language']
+            word_to_guess = get_random_word_for_country(language)
+            current_user = request.user
+            print(language)
+            print(current_user)
+            print(word_to_guess)
+            # consumption_hours = cd['consumption_hours']
+        return redirect('game')
 
 
 class GameView(LoginRequiredMixin, View):
