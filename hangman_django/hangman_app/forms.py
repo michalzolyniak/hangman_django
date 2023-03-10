@@ -7,11 +7,14 @@ from django.contrib.auth import authenticate
 # from .models import Category, Product
 
 User = get_user_model()
+START_ATTEMPT = 1
+END_ATTEMPT = 10
 
 LANGUAGE_T0_CHOSE = (
-    (1, "english"),
-    (2, "polish"),
+    (1, "polish"),
+    (2, "english"),
 )
+
 
 class UserCreateForm(forms.Form):
     """
@@ -58,3 +61,4 @@ class MainForm(forms.Form):
         main form
     """
     language = forms.ChoiceField(choices=LANGUAGE_T0_CHOSE)
+    attempts = forms.ChoiceField(choices=[(i, str(i)) for i in range(START_ATTEMPT, END_ATTEMPT+1)])

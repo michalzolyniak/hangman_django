@@ -2,6 +2,7 @@ from django.db import models
 from django.conf import settings
 import pandas as pd
 
+
 COUNTRY = (
     (1, "PL"),
     (2, "UK"),
@@ -28,12 +29,9 @@ def get_random_word_for_country(country):
     """
     words = WordsToGuess.objects.filter(country=country).order_by('?')
     if words.exists():
-        return words.first().word
+        return words.first()
     else:
         return None
-
-
-
 
 
 def import_polish_words():
@@ -48,7 +46,7 @@ def import_polish_words():
     WordsToGuess.objects.bulk_create(model_instances)
     print('finish')
     # return None
-    #from hangman_app.models import import_polish_words
+    # from hangman_app.models import import_polish_words
 
 
 class Game(models.Model):
@@ -61,6 +59,8 @@ class Game(models.Model):
     current_attempt = models.IntegerField()
     allowed_attempts = models.IntegerField()
     game_date = models.DateTimeField()
+    win_game = models.BooleanField(default=False)
+    finish_game = models.BooleanField(default=False)
 
 
 class GuessedWords(models.Model):
