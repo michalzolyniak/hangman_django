@@ -8,7 +8,8 @@ from django.urls import reverse_lazy
 from django.views.generic import FormView
 from .forms import UserCreateForm, LoginForm, GameForm, MainForm
 from django.views import View
-from hangman_app.models import get_random_word_for_country, Game, WordsToGuess
+from hangman_app.models import get_random_word_for_country, Game, WordsToGuess, \
+    get_user_word_to_guess
 from datetime import datetime
 
 User = get_user_model()
@@ -84,7 +85,7 @@ class MainView(LoginRequiredMixin, View):
                 user=current_user,
                 word_to_guess=word_to_guess,
                 used_letters="",
-                current_attempt=0,
+                current_attempt=1,
                 allowed_attempts=attempts,
                 game_date=datetime.now()
             )
@@ -99,16 +100,29 @@ class GameView(LoginRequiredMixin, View):
 
     def get(self, request, *args, **kwargs):
         form = self.form_class()
-        context = {'form': form}
+        current_user = request.user
+        user_game = Game.objects.get(user_id=current_user)
+        word_id = user_game.word_to_guess_id
+        word = "test"
+        allowed_attempts = user_game.allowed_attempts
+        current_attempt = user_game.current_attempt
+        # word = get_user_word_to_guess(word_id)
+        word_len = len(word)
+        password_word = word_len * " _"
+        context = {'form': form, 'password_word': password_word,
+                   'allowed_attempts': allowed_attempts,
+                   'current_attempt': current_attempt}
         return render(request, 'hangman_django/game.html', context)
 
-    # def post(self, request, *args, **kwargs):
-    #     form = self.form_class(request.POST)
-    #     context = {'form': form}
-    #     if form.is_valid():
-    #         cd = form.cleaned_data
-    #         name = cd['name']
-    #         consumption_hours = cd['consumption_hours']
+    def post(self, request, *args, **kwargs):
+        form = self.form_class(request.POST)
+        context = {'form': form}
+        if form.is_valid():
+            cd = form.cleaned_data
+            word = cd['word']
+            user_game = Game.objects.get(user_id=current_user)
+
+    #        consumption_hours = cd['consumption_hours']
     #         default_price = 1
     #         categories = cd['category']
     #         product = Product.objects.create(

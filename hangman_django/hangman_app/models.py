@@ -2,7 +2,6 @@ from django.db import models
 from django.conf import settings
 import pandas as pd
 
-
 COUNTRY = (
     (1, "PL"),
     (2, "UK"),
@@ -16,37 +15,6 @@ class WordsToGuess(models.Model):
     """
     word = models.CharField(unique=True, max_length=64)
     country = models.IntegerField(choices=COUNTRY, null=True)
-
-
-def test_word():
-    data = WordsToGuess.objects.get(id=1)
-    return data
-
-
-def get_random_word_for_country(country):
-    """
-    Returns a single random word from the WordsToGuess model for the given country.
-    """
-    words = WordsToGuess.objects.filter(country=country).order_by('?')
-    if words.exists():
-        return words.first()
-    else:
-        return None
-
-
-def import_polish_words():
-    print('start')
-    df_words = pd.read_fwf('/home/michalzolyniak/Desktop/coders_lab/hangman_django/polish_words.txt')
-    df_words.columns = ['word']
-    df_words['country'] = '1'
-    df_words = df_words.head(1000)
-    data = df_words.to_dict('records')
-    model_instances = [WordsToGuess(**row) for row in data]
-    # bulk create the model instances
-    WordsToGuess.objects.bulk_create(model_instances)
-    print('finish')
-    # return None
-    # from hangman_app.models import import_polish_words
 
 
 class Game(models.Model):
@@ -73,3 +41,39 @@ class GuessedWords(models.Model):
     guessed_attempt = models.IntegerField()
     allowed_attempts = models.IntegerField()
     game_date = models.DateTimeField()
+
+
+def import_polish_words():
+    print('start')
+    df_words = pd.read_fwf('/home/michalzolyniak/Desktop/coders_lab/hangman_django/polish_words.txt')
+    df_words.columns = ['word']
+    df_words['country'] = '1'
+    df_words = df_words.head(1000)
+    data = df_words.to_dict('records')
+    model_instances = [WordsToGuess(**row) for row in data]
+    # bulk create the model instances
+    WordsToGuess.objects.bulk_create(model_instances)
+    print('finish')
+    # return None
+    # from hangman_app.models import import_polish_words
+
+
+def get_random_word_for_country(country):
+    """
+    Returns a single random word from the WordsToGuess model for the given country.
+    """
+    words = WordsToGuess.objects.filter(country=country).order_by('?')
+    if words.exists():
+        return words.first()
+    else:
+        return None
+
+
+def get_user_word_to_guess(word_id):
+    word = WordsToGuess.objects.get(id=word_id).word
+    return word
+
+
+def test_word():
+    data = WordsToGuess.objects.get(id=1)
+    return data
