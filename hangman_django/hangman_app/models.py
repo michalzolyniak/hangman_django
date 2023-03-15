@@ -23,6 +23,7 @@ class Game(models.Model):
     """
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     word_to_guess = models.ForeignKey(WordsToGuess, on_delete=models.CASCADE)
+    current_guess = models.CharField(max_length=64, default=False)
     used_letters = models.CharField(max_length=64)
     current_attempt = models.IntegerField()
     allowed_attempts = models.IntegerField()

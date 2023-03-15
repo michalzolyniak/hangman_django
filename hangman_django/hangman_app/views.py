@@ -6,11 +6,13 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.urls import reverse_lazy
 # Create your views here.
 from django.views.generic import FormView
+from datetime import datetime
+
 from .forms import UserCreateForm, LoginForm, GameForm, MainForm
 from django.views import View
 from hangman_app.models import get_random_word_for_country, Game, WordsToGuess, \
     get_user_word_to_guess
-from datetime import datetime
+from hangman_app.game_logic import find_letter, password_word
 
 User = get_user_model()
 
@@ -103,13 +105,15 @@ class GameView(LoginRequiredMixin, View):
         current_user = request.user
         user_game = Game.objects.get(user_id=current_user)
         word_id = user_game.word_to_guess_id
-        word = "test"
+        #word = "test"
         allowed_attempts = user_game.allowed_attempts
         current_attempt = user_game.current_attempt
-        # word = get_user_word_to_guess(word_id)
+        word = get_user_word_to_guess(word_id)
         word_len = len(word)
-        password_word = word_len * " _"
-        context = {'form': form, 'password_word': password_word,
+        #hashed_word = word_len * " _"
+        hashed_word = word
+        breakpoint()
+        context = {'form': form, 'hashed_word': hashed_word,
                    'allowed_attempts': allowed_attempts,
                    'current_attempt': current_attempt}
         return render(request, 'hangman_django/game.html', context)
@@ -118,21 +122,36 @@ class GameView(LoginRequiredMixin, View):
         form = self.form_class(request.POST)
         context = {'form': form}
         if form.is_valid():
-            cd = form.cleaned_data
-            word = cd['word']
+            current_user = request.user
             user_game = Game.objects.get(user_id=current_user)
+            word_to_guess = user_game.word_to_guess.word
+            used_letters = user_game.used_letters
+            current_guess = user_game.current_guess
+            cd = form.cleaned_data
+            user_guess = str(cd['word'])
+            if len(user_guess) == 1:
+                if used_letters:
+                    used_letters = used_letters.split(',')
+                    if user_guess not in used_letters:
+                        used_letters.append(user_guess)
+                        used_letters.sort()
+                        used_letters = ",".join(used_letters)
+                        breakpoint()
+                        letter_indexes = find_letter(user_guess, word_to_guess)
+                else:
+                    used_letters = user_guess
+                    letter_indexes = find_letter(user_guess, word_to_guess)
+                    breakpoint()
+                if letter_indexes:
+                    hashed_word = password_word(word_to_guess, used_letters)
+            breakpoint()
+            word_len = len(word_to_guess)
+            hashed_word = word_len * " _"
+            allowed_attempts = user_game.allowed_attempts
+            current_attempt = user_game.current_attempt
+            context = {'form': form, 'hashed_word': hashed_word,
+                       'allowed_attempts': allowed_attempts,
+                       'current_attempt': current_attempt,
+                       'used_letters': used_letters}
 
-    #        consumption_hours = cd['consumption_hours']
-    #         default_price = 1
-    #         categories = cd['category']
-    #         product = Product.objects.create(
-    #             name=name,
-    #             consumption_hours=consumption_hours,
-    #             default_price=default_price
-    #         )
-    #
-    #         for category in categories:
-    #             product.category.add(category)
-    #
-    #         return redirect('fridge')
-    #     return render(request, 'fridge/add_category.html', context)
+            return render(request, 'hangman_django/game.html', context)
