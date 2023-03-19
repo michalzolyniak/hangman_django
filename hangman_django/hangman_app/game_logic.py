@@ -7,12 +7,16 @@ def find_letter(letter, word):
 
 
 def password_word(word_to_guess, used_letters):
-    word_letters = word_to_guess.split('')
+    word_letters = [char for char in word_to_guess]
     used_letters = used_letters.split(',')
     hashed_word = []
 
-    for letter in word_letters:
+    for index, letter in enumerate(word_letters):
         hashed_word.append("_")
+        #if index == 0:
+            #hashed_word.append("_")
+        #else:
+            #hashed_word.append(" _")
 
     for letter in used_letters:
         indexes = []
@@ -22,6 +26,5 @@ def password_word(word_to_guess, used_letters):
         if indexes:
             for index in indexes:
                 hashed_word[index] = letter
-    breakpoint()
     current_guess = ''.join(hashed_word)
     return current_guess

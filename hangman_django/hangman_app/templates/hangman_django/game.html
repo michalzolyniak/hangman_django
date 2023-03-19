@@ -4,6 +4,7 @@
     <form action="" method="post">
         {% csrf_token %}
         <br>
+        <h2>Word to guess: {{word}}</h2>
         <h2>Word to guess: {{hashed_word}}</h2>
         <h3>Current attempt {{current_attempt}} / {{allowed_attempts}}</h3>
         {{ form }}

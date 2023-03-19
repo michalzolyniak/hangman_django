@@ -82,10 +82,16 @@ class MainView(LoginRequiredMixin, View):
             language = int(cd['language'])
             attempts = int(cd['attempts'])
             word_to_guess = get_random_word_for_country(language)
+            # word_to_guess = 'test'
+            # breakpoint()
+            word_len = len(word_to_guess.word)
+            # word_len = len(word_to_guess)
+            hashed_word = word_len * " _"
             current_user = request.user
             Game.objects.create(
                 user=current_user,
                 word_to_guess=word_to_guess,
+                current_guess=hashed_word,
                 used_letters="",
                 current_attempt=1,
                 allowed_attempts=attempts,
@@ -105,15 +111,11 @@ class GameView(LoginRequiredMixin, View):
         current_user = request.user
         user_game = Game.objects.get(user_id=current_user)
         word_id = user_game.word_to_guess_id
-        #word = "test"
         allowed_attempts = user_game.allowed_attempts
+        current_guess = user_game.current_guess
         current_attempt = user_game.current_attempt
         word = get_user_word_to_guess(word_id)
-        word_len = len(word)
-        #hashed_word = word_len * " _"
-        hashed_word = word
-        breakpoint()
-        context = {'form': form, 'hashed_word': hashed_word,
+        context = {'form': form, 'word': word, 'hashed_word': current_guess,
                    'allowed_attempts': allowed_attempts,
                    'current_attempt': current_attempt}
         return render(request, 'hangman_django/game.html', context)
@@ -122,6 +124,7 @@ class GameView(LoginRequiredMixin, View):
         form = self.form_class(request.POST)
         context = {'form': form}
         if form.is_valid():
+            letter_indexes = []
             current_user = request.user
             user_game = Game.objects.get(user_id=current_user)
             word_to_guess = user_game.word_to_guess.word
@@ -129,29 +132,40 @@ class GameView(LoginRequiredMixin, View):
             current_guess = user_game.current_guess
             cd = form.cleaned_data
             user_guess = str(cd['word'])
-            if len(user_guess) == 1:
+            current_attempt = user_game.current_attempt
+            current_attempt += 1
+            allowed_attempts = user_game.allowed_attempts
+
+            if current_attempt > allowed_attempts:
+                message = "You lost!"
+                context = {'form': form, 'word': word_to_guess, 'message': message}
+                return render(request, 'hangman_django/message.html', context)
+            elif user_guess == word_to_guess:
+                message = "You win!"
+                context = {'form': form, 'word': word_to_guess, 'message': message}
+                return render(request, 'hangman_django/message.html', context)
+            elif len(user_guess) == 1:
                 if used_letters:
                     used_letters = used_letters.split(',')
                     if user_guess not in used_letters:
                         used_letters.append(user_guess)
                         used_letters.sort()
                         used_letters = ",".join(used_letters)
-                        breakpoint()
                         letter_indexes = find_letter(user_guess, word_to_guess)
                 else:
                     used_letters = user_guess
                     letter_indexes = find_letter(user_guess, word_to_guess)
-                    breakpoint()
                 if letter_indexes:
-                    hashed_word = password_word(word_to_guess, used_letters)
-            breakpoint()
-            word_len = len(word_to_guess)
-            hashed_word = word_len * " _"
-            allowed_attempts = user_game.allowed_attempts
-            current_attempt = user_game.current_attempt
-            context = {'form': form, 'hashed_word': hashed_word,
-                       'allowed_attempts': allowed_attempts,
-                       'current_attempt': current_attempt,
-                       'used_letters': used_letters}
+                    current_guess = password_word(word_to_guess, used_letters)
 
-            return render(request, 'hangman_django/game.html', context)
+        user_game.current_guess = current_guess
+        user_game.current_attempt = current_attempt
+        user_game.used_letters = used_letters
+        # breakpoint()
+        user_game.save()
+        context = {'form': form, 'word': word_to_guess, 'hashed_word': current_guess,
+                   'allowed_attempts': allowed_attempts,
+                   'current_attempt': current_attempt,
+                   'used_letters': used_letters}
+
+        return render(request, 'hangman_django/game.html', context)
