@@ -4,7 +4,6 @@ from django.contrib.auth import get_user_model, login, \
 from django.views.generic import RedirectView
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.urls import reverse_lazy
-# Create your views here.
 from django.views.generic import FormView
 from datetime import datetime
 from .forms import UserCreateForm, LoginForm, GameForm, MainForm
