@@ -128,7 +128,7 @@ class GameView(LoginRequiredMixin, View):
                 context = {'form': form, 'word': user_game.word_to_guess, 'message': message}
                 return render(request, 'hangman_django/message.html', context)
             elif game_status == "lost":
-                message = "You win!"
+                message = "You lost!"
                 context = {'form': form, 'word': user_game.word_to_guess, 'message': message}
                 return render(request, 'hangman_django/message.html', context)
             else:

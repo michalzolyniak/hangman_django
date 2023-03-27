@@ -38,7 +38,6 @@ class HangmanGame:
                 self.letter_indexes = self.find_letter()
             if self.letter_indexes:
                 self.current_guess = self.password_word()
-
         if self.current_guess == self.word_to_guess or \
                 self.user_guess == self.word_to_guess:
             self.update_user_game("win")
@@ -64,7 +63,6 @@ class HangmanGame:
         self.user_game.save()
 
     def find_letter(self):
-
         indexes = []
         for i in range(len(self.word_to_guess)):
             if self.word_to_guess[i] == self.user_guess:
@@ -72,7 +70,6 @@ class HangmanGame:
         return indexes
 
     def password_word(self):
-        self.used_letters = ",".join(self.used_letters)
         word_letters = [char for char in self.word_to_guess]
         used_letters = self.used_letters.split(',')
         hashed_word = []
