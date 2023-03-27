@@ -10,29 +10,27 @@ class HangmanGame:
             self.user_game = None
         else:
             self.user_game = Game.objects.get(user_id=current_user, finish_game=False)
-
-        self.word_id = self.user_game.word_to_guess_id
-        self.allowed_attempts = self.user_game.allowed_attempts
-        self.current_guess = self.user_game.current_guess
-        self.current_attempt = self.user_game.current_attempt
-        self.word = self.get_user_word_to_guess()
-        self.word_to_guess = self.user_game.word_to_guess.word
-        self.used_letters = self.user_game.used_letters
-        self.current_guess = self.user_game.current_guess
-        self.letter_indexes = []
+            self.word_id = self.user_game.word_to_guess_id
+            self.allowed_attempts = self.user_game.allowed_attempts
+            self.current_guess = self.user_game.current_guess
+            self.current_attempt = self.user_game.current_attempt
+            self.word = self.get_user_word_to_guess()
+            self.word_to_guess = self.user_game.word_to_guess.word
+            self.used_letters = self.user_game.used_letters
+            self.current_guess = self.user_game.current_guess
+            self.letter_indexes = []
 
     def get_user_word_to_guess(self):
         word = WordsToGuess.objects.get(id=self.word_id).word
         return word
 
     def check_user_attempt(self):
-
         if len(self.user_guess) == 1:
             if self.used_letters:
                 self.used_letters = self.used_letters.split(',')
                 if self.user_guess not in self.used_letters:
                     self.used_letters.append(self.user_guess)
-                    self.user_game.used_letters.sort()
+                    self.used_letters.sort()
                     self.used_letters = ",".join(self.used_letters)
                     self.letter_indexes = self.find_letter()
             else:
@@ -45,7 +43,6 @@ class HangmanGame:
                 self.user_guess == self.word_to_guess:
             self.update_user_game("win")
             return "win"
-
         self.current_attempt += 1
         if self.current_attempt > self.allowed_attempts:
             self.update_user_game("lost")
@@ -75,6 +72,7 @@ class HangmanGame:
         return indexes
 
     def password_word(self):
+        self.used_letters = ",".join(self.used_letters)
         word_letters = [char for char in self.word_to_guess]
         used_letters = self.used_letters.split(',')
         hashed_word = []

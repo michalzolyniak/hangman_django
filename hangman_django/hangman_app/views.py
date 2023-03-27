@@ -122,17 +122,18 @@ class GameView(LoginRequiredMixin, View):
 
             if not user_game.user_game:
                 return redirect('main')
-            breakpoint()
-            if user_game.check_user_attempt() == "win":
+            game_status = user_game.check_user_attempt()
+            if game_status == "win":
                 message = "You win!"
                 context = {'form': form, 'word': user_game.word_to_guess, 'message': message}
                 return render(request, 'hangman_django/message.html', context)
-            elif user_game.check_user_attempt() == "lost":
+            elif game_status == "lost":
                 message = "You win!"
                 context = {'form': form, 'word': user_game.word_to_guess, 'message': message}
                 return render(request, 'hangman_django/message.html', context)
             else:
-                context = {'form': form, 'word': user_game.word_to_guess, 'hashed_word': user_game.current_guess,
+                context = {'form': form, 'word': user_game.word_to_guess,
+                           'hashed_word': user_game.current_guess,
                            'allowed_attempts': user_game.allowed_attempts,
                            'current_attempt': user_game.current_attempt,
                            'used_letters': user_game.used_letters}
