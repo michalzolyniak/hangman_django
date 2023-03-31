@@ -1,10 +1,7 @@
-from datetime import datetime
 from django import forms
 from django.core.exceptions import ValidationError
 from django.contrib.auth import get_user_model
 from django.contrib.auth import authenticate
-
-# from .models import Category, Product
 
 User = get_user_model()
 START_ATTEMPT = 1
@@ -61,4 +58,4 @@ class MainForm(forms.Form):
         main form
     """
     language = forms.ChoiceField(choices=LANGUAGE_T0_CHOSE)
-    attempts = forms.ChoiceField(choices=[(i, str(i)) for i in range(START_ATTEMPT, END_ATTEMPT+1)])
+    attempts = forms.ChoiceField(choices=[(i, str(i)) for i in range(START_ATTEMPT, END_ATTEMPT + 1)])

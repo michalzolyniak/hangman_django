@@ -73,7 +73,6 @@ class MainView(LoginRequiredMixin, View):
 
     def post(self, request, *args, **kwargs):
         form = self.form_class(request.POST)
-        # context = {'form': form}
         if form.is_valid():
             cd = form.cleaned_data
             language = int(cd['language'])
@@ -96,7 +95,7 @@ class MainView(LoginRequiredMixin, View):
 
 class GameView(LoginRequiredMixin, View):
     """
-        Product create view
+        Game view
     """
     form_class = GameForm
 
@@ -104,16 +103,16 @@ class GameView(LoginRequiredMixin, View):
         form = self.form_class()
         current_user = request.user
         user_game = HangmanGame(current_user, None)
-        if not user_game.user_game:
+        if user_game.user_game_exist:
+            context = {'form': form, 'word': user_game.word, 'hashed_word': user_game.current_guess,
+                       'allowed_attempts': user_game.allowed_attempts,
+                       'current_attempt': user_game.current_attempt}
+            return render(request, 'hangman_django/game.html', context)
+        else:
             return redirect('main')
-        context = {'form': form, 'word': user_game.word, 'hashed_word': user_game.current_guess,
-                   'allowed_attempts': user_game.allowed_attempts,
-                   'current_attempt': user_game.current_attempt}
-        return render(request, 'hangman_django/game.html', context)
 
     def post(self, request, *args, **kwargs):
         form = self.form_class(request.POST)
-        context = {'form': form}
         if form.is_valid():
             cd = form.cleaned_data
             user_guess = str(cd['word'])
@@ -122,7 +121,7 @@ class GameView(LoginRequiredMixin, View):
 
             if not user_game.user_game:
                 return redirect('main')
-            game_status = user_game.check_user_attempt()
+            game_status = user_game.update_user_game()
             if game_status == "win":
                 message = "You win!"
                 context = {'form': form, 'word': user_game.word_to_guess, 'message': message}

@@ -45,18 +45,13 @@ class GuessedWords(models.Model):
 
 
 def import_polish_words():
-    print('start')
     df_words = pd.read_fwf('/home/michalzolyniak/Desktop/coders_lab/hangman_django/polish_words.txt')
     df_words.columns = ['word']
     df_words['country'] = '1'
     df_words = df_words.head(1000)
     data = df_words.to_dict('records')
     model_instances = [WordsToGuess(**row) for row in data]
-    # bulk create the model instances
     WordsToGuess.objects.bulk_create(model_instances)
-    print('finish')
-    # return None
-    # from hangman_app.models import import_polish_words
 
 
 def get_random_word_for_country(country):
@@ -70,11 +65,6 @@ def get_random_word_for_country(country):
         return None
 
 
-def get_user_word_to_guess(word_id):
-    word = WordsToGuess.objects.get(id=word_id).word
-    return word
 
 
-def test_word():
-    data = WordsToGuess.objects.get(id=1)
-    return data
+
