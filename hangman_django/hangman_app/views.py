@@ -62,7 +62,7 @@ class LogoutView(RedirectView):
 
 class MainView(LoginRequiredMixin, View):
     """
-        Product create view
+        Game create view
     """
     form_class = MainForm
 
@@ -131,6 +131,7 @@ class GameView(LoginRequiredMixin, View):
                 context = {'form': form, 'word': user_game.word_to_guess, 'message': message}
                 return render(request, 'hangman_django/message.html', context)
             else:
+                form = self.form_class()
                 context = {'form': form, 'word': user_game.word_to_guess,
                            'hashed_word': user_game.current_guess,
                            'allowed_attempts': user_game.allowed_attempts,

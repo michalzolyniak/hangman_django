@@ -19,7 +19,7 @@ class WordsToGuess(models.Model):
 
 class Game(models.Model):
     """
-        Hangman game per ser
+        Hangman game per user
     """
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     word_to_guess = models.ForeignKey(WordsToGuess, on_delete=models.CASCADE)
@@ -56,7 +56,7 @@ def import_polish_words():
 
 def get_random_word_for_country(country):
     """
-    Returns a single random word from the WordsToGuess model for the given country.
+        Returns a single random word from the WordsToGuess model for the given country.
     """
     words = WordsToGuess.objects.filter(country=country).order_by('?')
     if words.exists():
