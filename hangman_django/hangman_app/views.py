@@ -67,9 +67,14 @@ class MainView(LoginRequiredMixin, View):
     form_class = MainForm
 
     def get(self, request, *args, **kwargs):
-        form = self.form_class()
-        context = {'form': form}
-        return render(request, 'hangman_django/main.html', context)
+        current_user = request.user
+        user_game = HangmanGame(current_user, None)
+        if user_game.user_game_exist:
+            return redirect('game')
+        else:
+            form = self.form_class()
+            context = {'form': form}
+            return render(request, 'hangman_django/main.html', context)
 
     def post(self, request, *args, **kwargs):
         form = self.form_class(request.POST)
@@ -79,7 +84,7 @@ class MainView(LoginRequiredMixin, View):
             attempts = int(cd['attempts'])
             word_to_guess = get_random_word_for_country(language)
             word_len = len(word_to_guess.word)
-            hashed_word = word_len * " _"
+            hashed_word = word_len * "_"
             current_user = request.user
             Game.objects.create(
                 user=current_user,
@@ -104,10 +109,14 @@ class GameView(LoginRequiredMixin, View):
         current_user = request.user
         user_game = HangmanGame(current_user, None)
         if user_game.user_game_exist:
-            context = {'form': form, 'word': user_game.word, 'hashed_word': user_game.current_guess,
-                       'allowed_attempts': user_game.allowed_attempts,
-                       'current_attempt': user_game.current_attempt}
-            return render(request, 'hangman_django/game.html', context)
+            if user_game.count_games > 1:
+                user_game.delete_user_games()
+                return redirect('main')
+            else:
+                context = {'form': form, 'word': user_game.word, 'hashed_word': user_game.current_guess,
+                           'allowed_attempts': user_game.allowed_attempts,
+                           'current_attempt': user_game.current_attempt}
+                return render(request, 'hangman_django/game.html', context)
         else:
             return redirect('main')
 
@@ -118,7 +127,6 @@ class GameView(LoginRequiredMixin, View):
             user_guess = str(cd['word'])
             current_user = request.user
             user_game = HangmanGame(current_user, user_guess)
-
             if not user_game.user_game:
                 return redirect('main')
             game_status = user_game.update_user_game()

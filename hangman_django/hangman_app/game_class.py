@@ -5,6 +5,7 @@ class HangmanGame:
     """
         Hangman game logic class
     """
+
     def __init__(self, current_user, user_guess):
         """
         :param current_user: django User
@@ -18,16 +19,22 @@ class HangmanGame:
             self.user_game_exist = False
         else:
             self.user_game_exist = True
-            self.user_game = Game.objects.get(user_id=current_user, finish_game=False)
-            self.word_id = self.user_game.word_to_guess_id
-            self.allowed_attempts = self.user_game.allowed_attempts
-            self.current_guess = self.user_game.current_guess
-            self.current_attempt = self.user_game.current_attempt
-            self.word = WordsToGuess.objects.get(id=self.word_id).word
-            self.word_to_guess = self.user_game.word_to_guess.word
-            self.used_letters = self.user_game.used_letters
-            self.current_guess = self.user_game.current_guess
-            self.letter_indexes = []
+            if self.user_game.count() > 1:
+                self.delete_user_games()
+                self.user_game = None
+                self.user_game_exist = False
+            else:
+                self.user_game = Game.objects.get(user_id=current_user, finish_game=False)
+                self.word_id = self.user_game.word_to_guess_id
+                self.allowed_attempts = self.user_game.allowed_attempts
+                self.current_guess = self.user_game.current_guess
+                self.current_attempt = self.user_game.current_attempt
+                self.word = WordsToGuess.objects.get(id=self.word_id).word
+                self.word_to_guess = self.user_game.word_to_guess.word
+                self.used_letters = self.user_game.used_letters
+                self.current_guess = self.user_game.current_guess
+                self.letter_indexes = []
+                self.count_games = Game.objects.filter(user_id=current_user, finish_game=False).count()
 
     def update_user_game(self):
         """
@@ -107,3 +114,10 @@ class HangmanGame:
                     hashed_word[index] = letter
         current_guess = ''.join(hashed_word)
         return current_guess
+
+    def delete_user_games(self):
+        """
+            delete user games in postgres database
+            :return: None
+        """
+        self.user_game.delete()
