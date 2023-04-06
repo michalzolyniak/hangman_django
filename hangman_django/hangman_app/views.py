@@ -108,17 +108,13 @@ class GameView(LoginRequiredMixin, View):
         form = self.form_class()
         current_user = request.user
         user_game = HangmanGame(current_user, None)
-        if user_game.user_game_exist:
-            if user_game.count_games > 1:
-                user_game.delete_user_games()
-                return redirect('main')
-            else:
-                context = {'form': form, 'word': user_game.word, 'hashed_word': user_game.current_guess,
-                           'allowed_attempts': user_game.allowed_attempts,
-                           'current_attempt': user_game.current_attempt}
-                return render(request, 'hangman_django/game.html', context)
-        else:
+        if not user_game.user_game_exist:
             return redirect('main')
+        else:
+            context = {'form': form, 'word': user_game.word, 'hashed_word': user_game.current_guess,
+                       'allowed_attempts': user_game.allowed_attempts,
+                       'current_attempt': user_game.current_attempt}
+            return render(request, 'hangman_django/game.html', context)
 
     def post(self, request, *args, **kwargs):
         form = self.form_class(request.POST)

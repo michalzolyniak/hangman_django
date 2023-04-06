@@ -34,7 +34,7 @@ class HangmanGame:
                 self.used_letters = self.user_game.used_letters
                 self.current_guess = self.user_game.current_guess
                 self.letter_indexes = []
-                self.count_games = Game.objects.filter(user_id=current_user, finish_game=False).count()
+                self.word_length = len(self.word)
 
     def update_user_game(self):
         """
