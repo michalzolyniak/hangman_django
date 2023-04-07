@@ -113,7 +113,9 @@ class GameView(LoginRequiredMixin, View):
         else:
             context = {'form': form, 'word': user_game.word, 'hashed_word': user_game.current_guess,
                        'allowed_attempts': user_game.allowed_attempts,
-                       'current_attempt': user_game.current_attempt}
+                       'current_attempt': user_game.current_attempt,
+                       'word_length': user_game.word_length
+                       }
             return render(request, 'hangman_django/game.html', context)
 
     def post(self, request, *args, **kwargs):
@@ -140,5 +142,6 @@ class GameView(LoginRequiredMixin, View):
                            'hashed_word': user_game.current_guess,
                            'allowed_attempts': user_game.allowed_attempts,
                            'current_attempt': user_game.current_attempt,
-                           'used_letters': user_game.used_letters}
+                           'used_letters': user_game.used_letters,
+                           'word_length': user_game.word_length}
                 return render(request, 'hangman_django/game.html', context)
