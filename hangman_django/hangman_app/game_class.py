@@ -47,8 +47,8 @@ class HangmanGame:
                 if self.user_guess not in self.used_letters:
                     self.used_letters.append(self.user_guess)
                     self.used_letters.sort()
-                    self.used_letters = ",".join(self.used_letters)
                     self.letter_indexes = self.find_letter()
+                self.used_letters = ",".join(self.used_letters)
             else:
                 self.used_letters = self.user_guess
                 self.letter_indexes = self.find_letter()
