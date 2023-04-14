@@ -50,7 +50,7 @@ class GameForm(forms.Form):
     """
         Game form
     """
-    word = forms.CharField(max_length=150)
+    word = forms.CharField(max_length=150, label='Type letter or word')
 
 
 class MainForm(forms.Form):
