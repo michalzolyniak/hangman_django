@@ -1,0 +1,9 @@
+{% extends 'hangman_django/base.html' %}
+
+{% block content %}
+    <h2>Played games: {{played_games}}</h2>
+    <h3>Wins: {{wins}}</h3>
+    <h3>Loses: {{loses}}</h3>
+    <h3>Guessed: {{guessed_words}}</h3>
+    <h3>Not guessed words: {{not_guessed_words}}    </h3>
+{% endblock %}

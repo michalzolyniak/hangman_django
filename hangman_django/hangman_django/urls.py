@@ -16,7 +16,7 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path
 from hangman_app.views import LoginView, UserCreateView, \
-    GameView, LogoutView, MainView
+    GameView, LogoutView, MainView, UserStatView
 
 
 urlpatterns = [
@@ -26,4 +26,5 @@ urlpatterns = [
     path('logout/', LogoutView.as_view(), name='logout'),
     path('game/', GameView.as_view(), name='game'),
     path('', MainView.as_view(), name='main'),
+    path('user_stats/', UserStatView.as_view(), name='user-stats'),
 ]

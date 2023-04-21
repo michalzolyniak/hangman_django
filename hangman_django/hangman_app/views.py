@@ -145,3 +145,20 @@ class GameView(LoginRequiredMixin, View):
                            'used_letters': user_game.used_letters,
                            'word_length': user_game.word_length}
                 return render(request, 'hangman_django/game.html', context)
+
+
+class UserStatView(LoginRequiredMixin, View):
+    def get(self, request, *args, **kwargs):
+        played_games = 10
+        wins = 1
+        loses = 2
+        guessed_words = "test, cos, dwa"
+        not_guessed_words = "ona, moj, blazeria"
+
+        context = {"played_games": played_games,
+                   "wins": wins,
+                   "loses": loses,
+                   "guessed_words": guessed_words,
+                   "not_guessed_words": not_guessed_words
+                   }
+        return render(request, 'hangman_django/user_stats.html', context)
