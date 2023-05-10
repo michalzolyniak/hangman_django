@@ -10,6 +10,7 @@ from .forms import UserCreateForm, LoginForm, GameForm, MainForm
 from django.views import View
 from hangman_app.models import get_random_word_for_country, Game
 from hangman_app.game_class import HangmanGame
+from django.db.models import Sum
 
 User = get_user_model()
 
@@ -149,16 +150,21 @@ class GameView(LoginRequiredMixin, View):
 
 class UserStatView(LoginRequiredMixin, View):
     def get(self, request, *args, **kwargs):
-        played_games = 10
-        wins = 1
-        loses = 2
-        guessed_words = "test, cos, dwa"
-        not_guessed_words = "ona, moj, blazeria"
-
+        played_games = Game.objects.filter(user=request.user.id, finish_game=True).count()
+        wins = Game.objects.filter(user=request.user.id, win_game=True).count()
+        loses = Game.objects.filter(user=request.user.id, finish_game=True, win_game=False).count()
+        guessed_words = Game.objects.filter(user=request.user.id, win_game=True)
+        not_guessed_words = Game.objects.filter(user=request.user.id, finish_game=True, win_game=False)
+        guessed_words_show = [word.word_to_guess.word for word in guessed_words]
+        guessed_words_show.sort()
+        guessed_words_show = ','.join(guessed_words_show)
+        not_guessed_words_show = [word.word_to_guess.word for word in not_guessed_words]
+        not_guessed_words_show.sort()
+        not_guessed_words_show = ','.join(not_guessed_words_show)
         context = {"played_games": played_games,
                    "wins": wins,
                    "loses": loses,
-                   "guessed_words": guessed_words,
-                   "not_guessed_words": not_guessed_words
+                   "guessed_words": guessed_words_show,
+                   "not_guessed_words": not_guessed_words_show
                    }
         return render(request, 'hangman_django/user_stats.html', context)
